@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { fromEvent, timer } from 'rxjs';
+import { fromEvent, noop, Observable, timer } from 'rxjs';
 import { interval } from 'rxjs';
 import { count } from 'rxjs/operators';
 
@@ -13,23 +13,42 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    const httpObservable$ = new Observable(observer => {
+      fetch('/api/courses')
+      .then(response => {
+        return response.json();
+      })
+      .then(body => {
+        observer.next(body);
+        observer.complete();
+      })
+      .catch(error => {
+        observer.error(error);
+      });
+    });
 
-    const interval$ = timer(3000, 1000);
+    const sub = httpObservable$.subscribe(
+      courses => console.log(courses),
+      noop,
+      () => console.log('completed')
+    );
 
-    const sub = interval$.subscribe((val) => {
-      console.log('stream 1 => ' + val);
+    // const interval$ = timer(3000, 1000);
 
-      console.log('stream 2 => ' + val);
-    })
+    // const sub = interval$.subscribe((val) => {
+    //   console.log('stream 1 => ' + val);
 
-    setTimeout(()=> sub.unsubscribe(), 5000);
+    //   console.log('stream 2 => ' + val);
+    // })
 
-    const clickObservable = fromEvent(document, 'click');
+    // setTimeout(()=> sub.unsubscribe(), 5000);
 
-    clickObservable.subscribe(
-      event => console.log(event),
-      error => console.log(error),
-      () => console.log('completed!')
-    )
+    // const clickObservable = fromEvent(document, 'click');
+
+    // clickObservable.subscribe(
+    //   event => console.log(event),
+    //   error => console.log(error),
+    //   () => console.log('completed!')
+    // )
   }
 }
