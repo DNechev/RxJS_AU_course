@@ -18,7 +18,9 @@ export class HomeComponent implements OnInit {
     const httpObservable$ = createHttpObservable('/api/courses');
 
     const coursesObservable$: Observable<Course[]> = httpObservable$.pipe(
-            map(response => Object.values(response['payload']))
+      tap(() => console.log('request sent')),
+      map(response => Object.values(response['payload'])),
+      shareReplay<Course[]>()
     );
 
     this.beginnerCourses$ = coursesObservable$
