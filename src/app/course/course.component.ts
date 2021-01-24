@@ -15,6 +15,7 @@ import {
 } from 'rxjs/operators';
 import {merge, fromEvent, Observable, concat} from 'rxjs';
 import {Lesson} from '../model/lesson';
+import { createHttpObservable } from '../common/util';
 
 
 @Component({
@@ -38,16 +39,19 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
 
-        const courseId = this.route.snapshot.params['id'];
+      const courseId: number = this.route.snapshot.params['id'];
 
+      console.log('/api/courses/${courseId}');
 
+      this.course$ = createHttpObservable('/api/courses/' + courseId)
 
+      this.lessons$ = createHttpObservable('/api/lessons?courseId=' + courseId + '&pageSize=100').pipe(
+        map(response => response['payload']
+        )
+      );
     }
 
     ngAfterViewInit() {
-
-
-
 
     }
 

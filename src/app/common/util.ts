@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { Course } from "../model/course";
 
-export function createHttpObservable(url: string){
+export function createHttpObservable(url: string) : Observable<any>{
   return new Observable(observer => {
 
     const controller = new AbortController();
@@ -9,6 +9,7 @@ export function createHttpObservable(url: string){
 
     fetch(url, {signal: signal})
     .then(response => {
+      console.log(response.url);
       return response.json();
     })
     .then(body => {
