@@ -43,5 +43,15 @@ export class AboutComponent implements OnInit {
 
     // result$.subscribe(values => console.log(values));
     //#endregion
+
+    //#region unsubscribing
+    const http$ = createHttpObservable('/api/courses');
+
+    const sub = http$.subscribe(console.log);
+
+    setTimeout(() => {
+      sub.unsubscribe();
+    }, 0);
+    //#endregion
   }
 }
