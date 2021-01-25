@@ -16,6 +16,7 @@ import {
 import {merge, fromEvent, Observable, concat, interval} from 'rxjs';
 import {Lesson} from '../model/lesson';
 import { createHttpObservable } from '../common/util';
+import { debug, RxJsLoggingLevel } from '../common/debug';
 
 
 @Component({
@@ -42,23 +43,28 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
       console.log('/api/courses/${courseId}');
 
-      this.course$ = createHttpObservable('/api/courses/' + this.courseId)
+      this.course$ = createHttpObservable('/api/courses/' + this.courseId).pipe(
+        debug(RxJsLoggingLevel.INFO, 'Course value')
+      )
     }
 
     ngAfterViewInit() {
-      // this.lessons$ = fromEvent(this.input.nativeElement, 'keyup').pipe(
-      //   map(event => event['target'].value),
-      //   startWith(''),
-      //   debounceTime(500),
-      //   distinctUntilChanged(),
-      //   switchMap(search => this.loadLessons(search))
-      // )
-
-      fromEvent(this.input.nativeElement, 'keyup').pipe(
+      this.lessons$ = fromEvent(this.input.nativeElement, 'keyup').pipe(
         map(event => event['target'].value),
         startWith(''),
-        throttleTime(500)
-      ).subscribe(console.log)
+        debug(RxJsLoggingLevel.INFO, 'search'),
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap(search => this.loadLessons(search)),
+        debug(RxJsLoggingLevel.INFO, 'lessons value')
+      )
+
+      // Throttling
+      // fromEvent(this.input.nativeElement, 'keyup').pipe(
+      //   map(event => event['target'].value),
+      //   startWith(''),
+      //   throttleTime(500)
+      // ).subscribe(console.log)
     }
 
     loadLessons(search: string = ''): Observable<Lesson[]>{
