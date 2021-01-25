@@ -35,7 +35,6 @@ export class CourseDialogComponent implements OnInit, AfterViewInit {
             releasedAt: [moment(), Validators.required],
             longDescription: [course.longDescription,Validators.required]
         });
-
     }
 
     ngOnInit() {

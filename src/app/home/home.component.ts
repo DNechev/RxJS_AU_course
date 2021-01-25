@@ -26,7 +26,10 @@ export class HomeComponent implements OnInit {
       finalize(() => {
         console.log('Finalized')
       }),
-      shareReplay<Course[]>()
+      shareReplay<Course[]>(),
+      retryWhen(errors => errors.pipe(
+        delayWhen(() => timer(2000))
+      ))
     );
 
     this.beginnerCourses$ = coursesObservable$
